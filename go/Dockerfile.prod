@@ -1,0 +1,19 @@
+FROM golang:1.18 AS builder
+WORKDIR /usr/src/app
+
+RUN go mod init carlosabdalla/desafiogo
+
+COPY . .
+
+RUN go build -v -o /usr/local/bin/app ./
+RUN go run ./hello.go
+
+CMD ["app"]
+
+# Dokcerfile.prod copia a construção do Dockerfile padrão
+FROM golang:1.18-alpine
+WORKDIR /usr/src/app
+
+COPY --from=builder /usr/src/app .
+
+ENTRYPOINT ["go", "run", "hello.go"]
